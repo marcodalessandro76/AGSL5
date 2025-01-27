@@ -1,0 +1,248 @@
+#!/bin/bash
+#SBATCH --account=IscrC_TeraExc
+#SBATCH --nodes=5
+#SBATCH --time=24:00:00
+#SBATCH --job-name=GSL_A5_pw2gw
+#
+
+#SBATCH -p boost_usr_prod
+##SBATCH --qos=boost_qos_dbg         # max = 2 nodes 00:30:00 max user:2 nodes / 64 cores / 8 GPUs
+##SBATCH --qos=boost_qos_bprod       # 33-256 nodes  24:00:00 max user: 256 nodes
+##SBATCH --qos=boost_qos_lprod       # max = 3 nodes 4-00:00:00 max user: 3 nodes/12 GPUs
+
+#
+# Leonardo boost node: 1 CPU; 32 cores; 4 GPU; 494000MB
+#SBATCH --ntasks-per-node=16   # Number of MPI ranks per node (4 by Conor 16 by Ihor)
+#SBATCH --mem=494000          # memory per node out of 494000MB
+#SBATCH --cpus-per-task=2     # number of HW threads per task (equal to OMP_NUM_THREADS*4) (8 by Conor 2 by Ihor)
+#SBATCH --exclusive
+#SBATCH --gres=gpu:4          # Number of requested gpus per node, can vary between 1 and 4
+
+
+echo "SLURM_NNODES:         " $SLURM_NNODES
+echo "SLURM_TASKS_PER_NODE: " $SLURM_TASKS_PER_NODE
+echo "SLURM_CPUS_PER_TASK:  " $SLURM_CPUS_PER_TASK
+echo "SLURM_NPROCS:         " $SLURM_NPROCS
+echo "SLURM_JOB_CPUS_PER_NODE:" $SLURM_JOB_CPUS_PER_NODE
+export OMP_NUM_THREADS=$(echo "$SLURM_CPUS_PER_TASK*1"|bc)
+echo "OMP_NUM_THREADS       "= $OMP_NUM_THREADS
+
+
+export SRUN_CPUS_PER_TASK=$SLURM_CPUS_PER_TASK
+export OMP_PLACES=cores
+export OMP_PROC_BIND=close
+#export OMP_NUM_THREADS=8   # for testing
+export OMP_NUM_THREADS=$SLURM_CPUS_PER_TASK # by Ihor
+
+module load profile/chem-phys # by Ihor
+module load zlib/1.2.13--gcc--11.3.0 openmpi/4.1.4--nvhpc--23.1-cuda-11.8 fftw/3.3.10--openmpi--4.1.4--nvhpc--23.1 openblas/0.3.21--nvhpc--23.1 # by Ihor
+module load quantum-espresso/7.2--openmpi--4.1.4--nvhpc--23.1-openblas-cuda-11.8 # by Ihor
+module load intel-oneapi-mkl/2022.2.1 # by Ihor
+
+
+export QE_ROOT=/leonardo/prod/spack/03/install/0.19/linux-rhel8-icelake/nvhpc-23.1/quantum-espresso-7.2-etczqq3nmfidqa7quzuyoiay6x6mzb4s/bin/
+export PW=$QE_ROOT/pw.x
+export PP=$QE_ROOT/pp.x
+export PROJWFC=$QE_ROOT/projwfc.x
+export AVERAGE=$QE_ROOT/average.x
+#export PW2GW=$QE_ROOT/pw2gw.x
+export PW2GW=/leonardo_scratch/large/userexternal/ikupchak/qe-7.2_cpu/PP/src/pw2gw.x # from Alessia
+#srun --cpu-bind=cores ${PW} -npool 4 -ndiag 1 -inp scf.in > scf.out
+#srun --cpu-bind=cores ${PW} -npool 4 -ndiag 1 -inp nscf.in > nscf.out
+#srun --cpu-bind=cores ${PW2GW} -npool 1 < pw2gw.in > pw2gw.out
+
+INscf=scf.in
+OUTscf=scf.out
+PREFIX=GSL_A5
+QEOUTDIR="./tmp/"
+PSEUDODIR="./"
+
+# nscf run parameters
+NBNDS=800
+kx=10
+ky=20
+
+SAVEDIR="nbnds${NBNDS}_kpt${kx}x${ky}"
+
+rm -rf $SAVEDIR
+mkdir $SAVEDIR
+
+IN=nscf.in
+PW2GWIN=pw2gw.in
+
+OUT=nscf.out_$SAVEDIR
+PW2GWOUT=pw2gw.out_$SAVEDIR
+
+
+# scf-run to get new charge density after vc-relax with preserved symmetries
+# I should use the same k-grid as in the calculations for vacuum level
+cat > $INscf << EOF
+&CONTROL
+    calculation = 'scf',
+    restart_mode = 'from_scratch',
+    prefix = '$PREFIX',
+    outdir = '$QEOUTDIR',
+    pseudo_dir   = '$PSEUDODIR',
+    verbosity    = 'high',
+    wf_collect   =.false.
+/
+&SYSTEM
+    ibrav = 0,
+    nat = 14,
+    ntyp = 2,
+    ecutwfc = 70,
+    nbnd = 35,
+    occupations = 'fixed', !for insulators
+    degauss = 0.0, ! for insulators
+    smearing = 'gaussian' ! default value
+/
+&ELECTRONS
+    diago_thr_init = 1.0e-7,
+    diago_full_acc = .true.
+    electron_maxstep = 150,
+    diagonalization ='david',
+    mixing_mode = 'local-TF',
+    mixing_beta = 0.7,
+    conv_thr = 1d-7
+/
+
+&IONS
+/
+
+! from scf.GSL_A5.vcrelax.out in 0_vcrelax_not-paw folder
+CELL_PARAMETERS (angstrom)
+   7.363588492   0.000001000   0.000000000
+   0.000000001   4.272655813   0.000000000
+   0.000000000   0.000000000  12.000000000
+
+
+ATOMIC_SPECIES
+C   12.01100  C.upf             
+H   1.00      H.upf
+
+! from scf.GSL_A5.vcrelax.out in 0_vcrelax_not-paw folder
+ATOMIC_POSITIONS (angstrom)
+C            -1.7925108230        1.4456517994       -0.0414672295
+C             0.6379373039        1.4235971792       -0.3172245562
+C             3.0657768079        1.4455042995       -0.0157591793
+C            -0.5959562906        0.7133098684       -0.2503074405
+C             1.8700368141        0.7135148531       -0.2270262819
+C            -3.0402753064       -0.7719313527        0.4823609916
+H            -3.0239104491       -1.0594331893        1.5579425823
+C            -0.5959562909       -0.7133098686       -0.2503074405
+C             1.8700368138       -0.7135148525       -0.2270262819
+C            -1.7925108232       -1.4456518000       -0.0414672295
+C             0.6379373034       -1.4235971790       -0.3172245562
+C             3.0657768077       -1.4455042985       -0.0157591793
+C            -3.0402753060        0.7719313517        0.4823609916
+H            -3.0239104484        1.0594331883        1.5579425823
+
+K_POINTS {automatic}
+10 10 1	0 0 0
+EOF
+
+srun --cpu-bind=cores ${PW} -npool 20 -ndiag 1 -inp $INscf > $OUTscf
+
+# move in and out files from the current directory to the SAVEDIR
+mv -f $INscf $SAVEDIR
+mv -f $OUTscf $SAVEDIR
+
+
+cat > $IN << EOF
+&CONTROL
+    calculation = 'nscf',
+    restart_mode = 'from_scratch',
+    prefix = '$PREFIX',
+    outdir = '$QEOUTDIR',
+    pseudo_dir   = '$PSEUDODIR',
+    verbosity    = 'high',
+    wf_collect   =.false.
+/
+&SYSTEM
+    ibrav = 0,
+    nat = 14,
+    ntyp = 2,
+    ecutwfc = 70,
+    nbnd = $NBNDS,
+    occupations = 'fixed', !for insulators
+    degauss = 0.0, ! for insulators
+    smearing = 'gaussian' ! default value
+/
+&ELECTRONS
+    diago_thr_init = 1.0e-7,
+    diago_full_acc = .true.
+    electron_maxstep = 150,
+    diagonalization ='david',
+    mixing_mode = 'local-TF',
+    mixing_beta = 0.7,
+    conv_thr = 1d-7
+/
+
+&IONS
+/
+
+! from scf.GSL_A5.vcrelax.out in 0_vcrelax_not-paw folder
+CELL_PARAMETERS (angstrom)
+   7.363588492   0.000001000   0.000000000
+   0.000000001   4.272655813   0.000000000
+   0.000000000   0.000000000  12.000000000
+
+
+ATOMIC_SPECIES
+C   12.01100  C.upf             
+H   1.00      H.upf
+
+! from scf.GSL_A5.vcrelax.out in 0_vcrelax_not-paw folder
+ATOMIC_POSITIONS (angstrom)
+C            -1.7925108230        1.4456517994       -0.0414672295
+C             0.6379373039        1.4235971792       -0.3172245562
+C             3.0657768079        1.4455042995       -0.0157591793
+C            -0.5959562906        0.7133098684       -0.2503074405
+C             1.8700368141        0.7135148531       -0.2270262819
+C            -3.0402753064       -0.7719313527        0.4823609916
+H            -3.0239104491       -1.0594331893        1.5579425823
+C            -0.5959562909       -0.7133098686       -0.2503074405
+C             1.8700368138       -0.7135148525       -0.2270262819
+C            -1.7925108232       -1.4456518000       -0.0414672295
+C             0.6379373034       -1.4235971790       -0.3172245562
+C             3.0657768077       -1.4455042985       -0.0157591793
+C            -3.0402753060        0.7719313517        0.4823609916
+H            -3.0239104484        1.0594331883        1.5579425823
+
+K_POINTS {automatic}
+$kx $ky 1	0 0 0
+EOF
+
+srun --cpu-bind=cores ${PW} -npool 20 -ndiag 1 -inp $IN > $OUT
+
+cat > $PW2GWIN << EOF
+&inputpp
+  prefix='$PREFIX',
+  outdir='$QEOUTDIR',
+  what='gw',
+  qplda=.true.,
+  vxcdiag=.true.,
+  Emin=0.0,
+  Emax=30.0,
+  DeltaE=0.005
+/
+EOF
+
+srun --cpu-bind=cores ${PW2GW} < $PW2GWIN > $PW2GWOUT
+
+mv -f $IN $SAVEDIR
+mv -f $OUT $SAVEDIR
+mv -f $PW2GWIN $SAVEDIR
+mv -f $PW2GWOUT $SAVEDIR
+
+mv -f epsTOT.dat $SAVEDIR/epsTOT.dat_$SAVEDIR
+mv -f epsX.dat $SAVEDIR/epsX.dat_$SAVEDIR
+mv -f epsY.dat $SAVEDIR/epsY.dat_$SAVEDIR
+mv -f epsZ.dat $SAVEDIR/epsZ.dat_$SAVEDIR
+mv -f k.dat $SAVEDIR/k.dat_$SAVEDIR
+mv -f matrixelements $SAVEDIR/matrixelements_$SAVEDIR
+
+# other files produced by new pw2gw code must be added here later
+
+
+exit
