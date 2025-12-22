@@ -1,0 +1,153 @@
+#                                                                     
+# ooooo   oooo ..     ooo        ooo ooooooooo.    .oooo.             
+#  `88.   .8" .88.    `88.       .88 `88"   `Y8b  dP"  `Yb            
+#   `88. .8" .8"88.    888b     d"88  88     888 88      88           
+#    `88.8" .8" `88.   8 Y88. .P  88  88oooo888" 88      88           
+#     `88" .88ooo888.  8  `888"   88  88    `88b 88      88           
+#      88 .8"     `88. 8    Y     88  88    .88P `8b    d8"           
+#     o88o88o      888o8          88 o88bood8P"   `Ybod8P"            
+#                                                                     
+#                                                                     
+# Version 5.1.0 Revision 22561 Hash (prev commit) 785b4fd6f           
+#                         Branch is                                   
+#        MPI+OpenMP+CUDA+SLK+SLEPC+HDF5_MPI_IO Build                  
+#                 http://www.yambo-code.org                           
+#
+# Sorted Interacting Energies @ Q(1):   0.00000000     0.999999975E-5   0.00000000    [q->0 direction]
+#
+# [GEN] GF Energies                               : Perdew, Burke & Ernzerhof(X)+Perdew, Burke & Ernzerhof(C)
+# [GEN] Green`s Function                          : Resonant
+#
+# [GEN] Gauge                                     : Length
+# [GEN] [r,Vnl] included                          : yes
+#
+# DIP band range                                  :  19  31
+# DIP band range limits                           :  31  19
+# DIP e/h energy range                            :  -1.00000000     -1.00000000    [eV]
+# RL vectors in the sum                           :  20007
+# [r,Vnl] included                                : yes
+# Bands ordered                                   : no
+# Direct v evaluation                             : no
+# Approach used                                   : G-space v
+# Dipoles computed                                : R V P
+# Wavefunctions                                   : Perdew, Burke & Ernzerhof(X)+Perdew, Burke & Ernzerhof(C)
+#
+#
+# [K] Identifier                                  :   4674
+# [K] Dimension                                   :  18900
+# [K] Bands                                       :  19  31
+# [K] Exchange res                                : yes
+# [K] Correlation res                             : yes
+# [K] Kernel`s coupling                           : no
+# [K] Exchange cpl                                : no
+# [K] Correlation cpl                             : no
+# [K] W interaction is bare                       : no
+# [K] ALDA kernel in R-space                      : no
+# [K] RL vectors exchange                         :  20067
+# [K] RL vectors correlation                      :   637
+# [K] E/h energy range                            :  -1.00000000     -1.00000000    [eV]
+# [K] Coupling range                              :   100.000000      100.000000    [o/o]
+# [W] Interaction is diagonal                     : no
+# [W] Matrix size                                 :  1839
+# [W] Bands                                       :     1   400
+# [W] e/h energy range                            :  -1.00000000     -1.00000000    [eV]
+# [W] Poles                                       :   100.000000    [o/o]
+# [W] RL vectors in the sum                       :  26281
+# [W] [r,Vnl] included                            : yes
+# [W] Longitudinal Gauge                          : no
+# [W] Field direction                             :  0.999999975E-5   0.00000000      0.00000000   
+# [W] Coulomb Cutoff                              : slab z
+# [W] Hxc Kernel                                  : HARTREE
+# [RIM] RL components col                         :  103
+# [RIM] Random points col                         :   5000000
+# [SOC] Perturbative SOC                          : no
+# [X] Response Kind                               : BAR
+#
+#
+#    E [eV]             N_deg              eps
+#
+        0.501294           1.000000           0.935908E-6
+        0.614084           1.000000           0.12912E-10
+        0.663400           1.000000           0.143470E-6
+        0.719467           1.000000           0.84604E-11
+        0.732135           1.000000           0.477443E-7
+        0.766460           1.000000           0.179817E-7
+        0.777387           1.000000           0.60651E-16
+        0.778708           1.000000           0.82777E-13
+        0.812354           1.000000           0.144378E-7
+        0.827805           1.000000           0.791469E-8
+        0.840787           1.000000           0.17841E-13
+        0.878438           1.000000           0.464085E-8
+        0.882993           1.000000           0.35293E-15
+        0.888361           1.000000           0.10123E-13
+        0.914788           1.000000           0.46693E-17
+        0.916961           1.000000           0.99949E-14
+        0.934309           1.000000           0.124087E-7
+        0.954151           1.000000           0.13647E-09
+        0.977098           2.000000           0.38827E-13
+# 
+# 02/14/2025 at 13:41 yambo @ lrdn3152.leonardo.local [start]
+# 02/14/2025 at 14:07                                 [end]
+#  
+# Timing   [Min/Max/Average]: 25m-09s/25m-09s/25m-09s
+#
+# .-Input file  bse-bsengblk_3.0-bands_19-31-kpoints_15x30/bse-bsengblk_3.0-bands_19-31-kpoints_15x30.in
+# | rim_cut                          # [R] Coulomb potential
+# | rim_w                            # [R] Screened coulomb potential
+# | optics                           # [R] Linear Response optical properties
+# | bss                              # [R] BSE solver
+# | bse                              # [R][BSE] Bethe Salpeter Equation.
+# | FFTGvecs= 30               Ha    # [FFT] Plane-waves
+# | BS_CPU= "16.1.1"                 # [PARALLEL] CPUs for each role
+# | BS_ROLEs= "k.eh.t"               # [PARALLEL] CPUs roles (k,eh,t)
+# | BS_nCPU_LinAlg_INV=  4           # [PARALLEL] CPUs for Linear Algebra (if -1 it is automatically set)
+# | BS_nCPU_LinAlg_DIAGO=  4         # [PARALLEL] CPUs for Linear Algebra (if -1 it is automatically set)
+# | DIP_CPU= "4.2.2"                 # [PARALLEL] CPUs for each role
+# | DIP_ROLEs= "v.c.k"               # [PARALLEL] CPUs roles (k,c,v)
+# | X_Threads=0                      # [OPENMP/X] Number of threads for response functions
+# | DIP_Threads=  8                  # [OPENMP/X] Number of threads for dipoles
+# | K_Threads=  8                    # [OPENMP/BSK] Number of threads for response functions
+# | RandQpts=  5000000               # [RIM] Number of random q-points in the BZ
+# | RandGvec= 103              RL    # [RIM] Coulomb interaction RS components
+# | RandGvecW= 11              RL    # [RIM-W] Screened interaction RS components
+# | rimw_type= "default"             # [RIM-W] Screened interaction limit metal/semiconductor/graphene
+# | CUTGeo= "slab z"                 # [CUT] Coulomb Cutoff geometry: box/cylinder/sphere/ws/slab X/Y/Z/XY..
+# | % CUTBox
+# |  0.000000 | 0.000000 | 0.000000 |        # [CUT] [au] Box sides
+# | %
+# | CUTRadius= 0.000000              # [CUT] [au] Sphere/Cylinder radius
+# | CUTCylLen= 0.000000              # [CUT] [au] Cylinder length
+# | CUTwsGvec= 0.000000              # [CUT] WS cutoff: number of G to be modified
+# | BSKmod= "SEX"                    # [BSE] IP/Hartree/HF/ALDA/SEX/BSfxc
+# | BSEmod= "resonant"               # [BSE] resonant/retarded/coupling
+# | BSSmod= "s"                      # [BSS] (h)aydock/(d)iagonalization/(s)lepc/(i)nversion/(t)ddft`
+# | DipComputed= "R V P"             # [DIP] [default R P V; extra P2 Spin Orb]
+# | BSENGexx= 30               Ha    # [BSK] Exchange components
+# | BSENGBlk= 3                Ha    # [BSK] Screened interaction block size [if -1 uses all the G-vectors of W(q,G,Gp)]
+# | #WehCpl                        # [BSK] eh interaction included also in coupling
+# | % KfnQP_E
+# |  0.742110 | 1.000000 | 1.000000 |        # [EXTQP BSK BSS] E parameters  (c/v) eV|adim|adim
+# | %
+# | % BSEQptR
+# |  1 | 1 |                             # [BSK] Transferred momenta range
+# | %
+# | % BSEBands
+# |  19 | 31 |                           # [BSK] Bands range
+# | %
+# | % BEnRange
+# | -0.500000 | 4.000000 |         eV    # [BSS] Energy range
+# | %
+# | % BDmRange
+# |  0.100000 | 0.100000 |         eV    # [BSS] Damping range
+# | %
+# | BEnSteps= 1000                   # [BSS] Energy steps
+# | % BLongDir
+# |   0.00000    | 0.100000E-4 |  0.00000    # [BSS] [cc] Electric Field
+# | %
+# | BSEprop= "abs esrt"              # [BSS] Can be any among abs/jdos/kerr/magn/dich/photolum/esrt
+# | BSEdips= "none"                  # [BSS] Can be "trace/none" or "xy/xz/yz" to define off-diagonal rotation plane
+# | WRbsWF                         # [BSS] Write to disk excitonic the WFs
+# | BSSNEig= 20                      # [SLEPC] Number of eigenvalues to compute
+# | BSSEnTarget= 0.000000      eV    # [SLEPC] Target energy to find eigenvalues
+# | BSSSlepcApproach= "Krylov-Schur" # [SLEPC] Approach ("Krylov-Schur","Generalized-Davidson","Jacob-Davidson")
+# | BSSSlepcMaxIt=0                  # [SLEPC] Maximum number of iterations
