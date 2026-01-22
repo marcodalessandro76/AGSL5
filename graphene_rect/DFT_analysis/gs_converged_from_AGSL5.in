@@ -1,0 +1,45 @@
+&control
+         calculation = 'scf'
+              outdir = './'
+              prefix = 'gs_converged_from_AGSL5'
+          pseudo_dir = '../../pseudos'
+        restart_mode = 'from_scratch'
+           verbosity = 'high'
+          wf_collect = .false.
+/&end
+&system
+             degauss = 0.0
+             ecutwfc = 70
+    force_symmorphic = .true.
+               ibrav = 0
+                 nat = 12
+                nbnd = 26
+                ntyp = 1
+         occupations = 'fixed'
+            smearing = 'gaussian'
+/&end
+&electrons
+            conv_thr = 1e-07
+      diago_full_acc = .false.
+/&end
+ATOMIC_SPECIES
+   C   12.011       C_ONCV_PBE.upf
+ATOMIC_POSITIONS { angstrom }
+  C  -1.8240346854   1.4229690992  -0.0000000000
+  C   0.6403502323   1.4229739138   0.0000000000
+  C   3.1047361062   1.4229738059   0.0000000000
+  C  -0.5918229623   0.7115547591  -0.0000000000
+  C   1.8725644220   0.7115516702   0.0000000000
+  C  -3.0562025261  -0.7115519837   0.0000000000
+  C  -0.5918229631  -0.7115547595   0.0000000000
+  C   1.8725644210  -0.7115516689  -0.0000000000
+  C  -1.8240346920  -1.4229691005   0.0000000000
+  C   0.6403502315  -1.4229739133  -0.0000000000
+  C   3.1047360996  -1.4229738037  -0.0000000000
+  C  -3.0562025091   0.7115519815   0.0000000000
+K_POINTS { automatic }
+ 10 10  1  0  0  0
+CELL_PARAMETERS angstrom
+  7.3931468399   0.0000010005   0.0000000000 
+  0.0000000018   4.2689578672   0.0000000000 
+  0.0000000000   0.0000000000   9.0988715092 
